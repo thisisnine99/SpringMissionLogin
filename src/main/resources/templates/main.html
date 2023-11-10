@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>환영합니다!</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<!-- 전체 -->
+<div class="all">
+    <!-- 상단메뉴 -->
+    <div class="top">
+        <a href="/note/list" class="logo">logo</a>
+    </div>
+    <!-- 컨텐츠 전체 -->
+    <div class="content-wrap">
+        <!-- 왼쪽메뉴 -->
+        <div class="left">
+            <div class="box">
+                <form th:action="@{/note/create}" method="post" class="button">
+                    <input type="submit" value="노트추가" class="BT">
+                </form>
+                <form method="post" class="button">
+                    <input type="button" value="노트삭제" class="BT" onclick="FormAction(this, ACTIONS_NOTE_DELETE)">
+                    <input type="hidden" name="targetNoteid" th:value="${targetNote.id}">
+                </form>
+                <form th:action="@{/note/addGroup}" method="post" class="button">
+                    <input type="submit" value="하위노트추가" class="BT" onclick="saveOpenList()">
+                    <input type="hidden" name="targetNoteid" th:value="${targetNote.id}">
+                </form>
+            </div>
+            <h1>노트목록</h1>
+            <div class="box">
+                <a href="/user/signup" class="button">회원가입</a>
+                <a th:href="@{/user/login}" sec:authorize="isAnonymous()" class="button">로그인</a>
+                <a th:href="@{/user/logout}" sec:authorize="isAuthenticated()" class="button">로그아웃</a>
+                <form method="post">
+                    <div class="groupName">
+                        <input type="text" name="title" th:value="${targetNote.title}" class="editNote">
+                    </div>
+                    <input type="button" value="노트명수정" class="BT" onclick="FormAction(this, ACTIONS_NOTE_UPDATE)">
+                    <input type="hidden" name="targetNoteid" th:value="${targetNote.id}">
+                </form>
+            </div>
+            <ul class="menu bg-base-200 rounded-box">
+                <li th:replace="~{/fragments :: tree(${targetNote}, ${noteList})}"></li>
+            </ul>
+        </div>
+        <div class="left">
+            <div class="box">
+                <form th:action="@{/article/create}" method="post" class="button">
+                    <input type="submit" value="글추가" class="BT">
+                    <input type="hidden" name="targetNoteid" th:value="${targetNote.id}">
+                </form>
+                <form method="post" class="button">
+                    <input type="button" value="글삭제" class="BT" onclick="FormAction(this, ACTIONS_DELETE)">
+                    <input type="hidden" name="targetArticleid" th:value="${targetArticle.id}">
+                </form>
+            </div>
+            <h1>글목록</h1>
+            <ul th:each="article : ${articleList}" th:class="${article.id == targetArticle.id} ? 'now' : ''">
+                <a th:href="@{|/article/${article.id}|}" th:text="${article.title}" onclick="saveOpenList()"></a>
+            </ul>
+        </div>
+        <!-- 중앙컨텐츠 -->
+        <div class="content">
+            <form method="post">
+                <input type="button" value="수정하기" class="BT" onclick="FormAction(this, ACTIONS_UPDATE)">
+                <input type="hidden" name="targetArticleid" th:value="${targetArticle.id}">
+                <div class="textbox">
+                    <input type="text" name="title" th:value="${targetArticle.title}" class="title">
+                </div>
+                <div class="textbox">
+                    <textarea name="content" rows="20" th:text="${targetArticle.content}"></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    ACTIONS_UPDATE = {
+        'url': '/article/modify',
+        'msg': '수정하시겠습니까?'
+    }
+    ACTIONS_DELETE = {
+        'url': '/article/delete',
+        'msg': '삭제하시겠습니까?'
+    }
+    ACTIONS_NOTE_DELETE = {
+        'url': '/note/delete',
+        'msg': '삭제하시겠습니까?'
+    }
+    ACTIONS_NOTE_UPDATE = {
+        'url': '/note/modify',
+        'msg': '수정하시겠습니까?'
+    }
+
+    function FormAction(input, action) {
+        if (confirm(action.msg)) {
+            input.form.action = action.url;
+            input.form.submit();
+        }
+    }
+
+    function saveOpenList() {
+            let resultList = document.querySelectorAll("details");
+            let openList = [];
+            resultList.forEach(function (item) {
+                if(item.getAttribute("open") != null) {
+                    openList.push(item.getAttribute("id"));
+                }
+            });
+
+            localStorage.setItem("openList", JSON.stringify(openList));
+    }
+
+    const openList = localStorage.getItem("openList");
+
+    if(openList != null) {
+         openListArr = JSON.parse(openList);
+         openListArr.forEach(function (item) {
+             document.getElementById(item).setAttribute("open", true);
+         });
+    }
+
+
+</script>
+</body>
+</html>

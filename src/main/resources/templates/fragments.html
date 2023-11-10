@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<li th:fragment="tree(targetNote, noteList)" th:each="note : ${noteList}">
+    <a th:href="@{|/note/${note.id}|}" th:if="${note.getChildList().isEmpty()}" th:text="${note.title}" th:class="${note.id == targetNote.id} ? 'now' : ''" onclick="saveOpenList()"></a>
+    <details th:id="${'d' + note.id}" th:unless="${note.getChildList().isEmpty()}">
+        <summary th:class="${note.id == targetNote.id} ? 'now' : ''">
+            <a th:href="@{|/note/${note.id}|}" th:text="${note.title}" onclick="saveOpenList()"></a>
+        </summary>
+        <ul>
+            <li th:if="${note.getChildList().isEmpty()}" th:replace="~{/fragments :: tree(${targetNote}, ${note.childList})}"></li>
+        </ul>
+    </details>
+</li>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+</head>
+<body>
+<form th:action="@{/user/create}" method="post">
+    <div>
+        <h1>회원가입</h1>
+        <div>
+            <label for="loginid">ID</label>
+            <input type="text" name="loginid">
+        </div>
+        <div>
+            <label for="password">PASSWORD</label>
+            <input type="password" name="password">
+        </div>
+        <div>
+            <label for="email">Email</label>
+            <input type="email" name="email">
+        </div>
+        <div>
+            <label for="nickname">닉네임</label>
+            <input type="text" name="nickname">
+        </div>
+    </div>
+    <div>
+        <input type="submit" value="회원가입" onclick="alert('회원가입되셨습니다!')">
+    </div>
+</form>
+<script>
+</script>
+</body>
+</html>
